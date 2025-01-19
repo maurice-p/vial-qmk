@@ -14,6 +14,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "timer.h"
+
+
+enum my_keycodes {
+    LOL_01 = QK_KB_0,
+    MOVE
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case LOL_01:
+      if (record->event.pressed) {
+        register_code(KC_B);
+        register_code(KC_F11);
+        //_delay_ms(20);
+        register_mods(MOD_MASK_SHIFT); 
+      } else {
+        unregister_mods(MOD_MASK_SHIFT);
+        unregister_code(KC_B);
+        unregister_code(KC_F11);
+      }
+      return false; // Skip all further processing of this key
+    case MOVE:
+      if (record->event.pressed) {
+        register_mods(MOD_MASK_CG);
+      } else {
+        unregister_mods(MOD_MASK_CG);
+      }
+      return true; // Skip all further processing of this key
+    default:
+      return true; // Process all other keycodes normally
+  }
+}
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [0] = LAYOUT_all( /* Base */

@@ -2,6 +2,16 @@
   "name": "Mode M256W-S Alpha",
   "vendorId": "0x00DE",
   "productId": "0x5753",
+  "customKeycodes": [
+    {"name": "LOL_01",
+      "title": "Key_LoL_AttackMove",
+      "shortName": "LOL_01"
+    },
+    {"name": "MOVE",
+      "title": "Shortcut Move Window",
+      "shortName": "MOVE"
+    }
+  ],
   "matrix": {
     "rows": 6,
     "cols": 15
