@@ -10,6 +10,10 @@
     {"name": "MOVE",
       "title": "Shortcut Move Window",
       "shortName": "MOVE"
+    },
+    {"name": "CAPSLOCK",
+      "title": "Capslock Replacement for MO(1) and Aerospace",
+      "shortName": "CAPSLOCK"
     }
   ],
   "matrix": {

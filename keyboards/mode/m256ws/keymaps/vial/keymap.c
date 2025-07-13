@@ -19,7 +19,8 @@
 
 enum my_keycodes {
     LOL_01 = QK_KB_0,
-    MOVE
+    MOVE,
+    CAPSLOCK
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -41,6 +42,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         register_mods(MOD_MASK_CG);
       } else {
         unregister_mods(MOD_MASK_CG);
+      }
+      return true; // Skip all further processing of this key
+    case CAPSLOCK:
+      if (record->event.pressed) {
+        if (get_mods() == MOD_MASK_CG) {
+          unregister_mods(MOD_MASK_CG);
+          register_mods(MOD_MASK_ALT);
+        }
+        else {
+          layer_on(1);
+        }
+      } else {
+        if (get_mods() == MOD_MASK_ALT) {
+          unregister_mods(MOD_MASK_ALT);
+          register_mods(MOD_MASK_CG);
+        }
+        layer_off(1);
       }
       return true; // Skip all further processing of this key
     default:
