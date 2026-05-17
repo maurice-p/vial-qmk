@@ -14,20 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "keymap_german.h"
 //#include "timer.h"
 //#include "wait.h"
 
 enum layers {
-    L0,
-    L1,
-    L2,
-    L3
+    L0_BASE,
+    L1_GAME,
+    L2_SYM,
+    L3_NAV
 };
 
 enum my_keycodes {
     LOL_01 = QK_KB_0,
     MOVE,
-    CAPSLOCK
+    CAPSLOCK,
+    GAME_TOG
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -58,16 +60,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           register_mods(MOD_MASK_ALT);
         }
         else {
-          layer_on(1);
+          layer_on(L2_SYM);
         }
       } else {
         if (get_mods() == MOD_MASK_ALT) {
           unregister_mods(MOD_MASK_ALT);
           register_mods(MOD_MASK_CG);
         }
-        layer_off(1);
+        layer_off(L2_SYM);
       }
       return true; // Skip all further processing of this key
+    case GAME_TOG:
+      if (record->event.pressed) {
+        if (get_highest_layer(default_layer_state) == L1_GAME) {
+          set_single_default_layer(L0_BASE);
+        }
+        else {
+          set_single_default_layer(L1_GAME);
+        }
+      }
+      return false; // Skip all further processing of this key
     default:
       return true; // Process all other keycodes normally
   }
@@ -75,23 +87,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [L0] = LAYOUT_65_iso_blocker(
-        KC_ESC,              KC_1,                KC_2,                KC_3,                KC_4,                KC_5,                KC_6,                KC_7,                KC_8,                KC_9,                KC_0,                KC_MINS,             KC_EQL,              KC_BSPC,             KC_DEL,
-        KC_TAB,              KC_Q,                KC_W,                KC_E,                KC_R,                KC_T,                KC_Y,                KC_U,                KC_I,                KC_O,                KC_P,                KC_LBRC,             KC_RBRC,                                  TO(L3),
-        MO(L1),              KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_HOME,
-        KC_LSFT,             MO(L2),              KC_Z,                KC_X,                KC_C,                KC_V,                KC_B,                KC_N,                KC_M,                KC_COMM,             KC_DOT,              KC_SLSH,             KC_RSFT,             KC_UP,               KC_END,
-        KC_LCTL,             KC_LGUI,             KC_LALT,                                                       KC_SPC,                                                                                                  MO(L2),              KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
+    [L0_BASE] = LAYOUT_65_iso_blocker(
+        KC_ESC,              DE_1,                DE_2,                DE_3,                DE_4,                DE_5,                DE_6,                DE_7,                DE_8,                DE_9,                DE_0,                DE_SS,               DE_ACUT,             KC_BSPC,             KC_DEL,
+        KC_TAB,              DE_Q,                DE_W,                DE_E,                DE_R,                DE_T,                DE_Z,                DE_U,                DE_I,                DE_O,                DE_P,                DE_UDIA,             DE_PLUS,                                  GAME_TOG,
+        MO(L2_SYM),          DE_A,                DE_S,                DE_D,                DE_F,                DE_G,                DE_H,                DE_J,                DE_K,                DE_L,                DE_ODIA,             DE_ADIA,             MO(L2_SYM),          KC_ENT,              KC_HOME,
+        KC_LSFT,             DE_LABK,             DE_Y,                DE_X,                DE_C,                DE_V,                DE_B,                DE_N,                DE_M,                DE_COMM,             DE_DOT,              DE_MINS,             KC_RSFT,             KC_UP,               KC_END,
+        KC_LCTL,             KC_LGUI,             KC_LALT,                                                       LT(L3_NAV, KC_SPC),                                                                                      KC_LALT,             KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
     ),
 
-    [L1] = LAYOUT_65_iso_blocker(
+    [L1_GAME] = LAYOUT_65_iso_blocker(
+        KC_ESC,              DE_1,                DE_2,                DE_3,                DE_4,                DE_5,                DE_6,                DE_7,                DE_8,                DE_9,                DE_0,                KC_F11,              KC_F12,              KC_BSPC,             KC_DEL,
+        KC_TAB,              DE_Q,                DE_W,                DE_E,                DE_R,                DE_T,                DE_Z,                DE_U,                DE_I,                DE_O,                DE_P,                DE_UDIA,             DE_PLUS,                                  GAME_TOG,
+        DE_PLUS,             DE_A,                DE_S,                DE_D,                DE_F,                DE_G,                DE_H,                DE_J,                DE_K,                DE_L,                DE_ODIA,             DE_ADIA,             MO(L2_SYM),          KC_ENT,              KC_HOME,
+        LOL_01,              DE_LABK,             DE_Y,                DE_X,                DE_C,                DE_V,                DE_B,                DE_N,                DE_M,                DE_COMM,             DE_DOT,              DE_MINS,             KC_RSFT,             KC_UP,               KC_END,
+        KC_LCTL,             KC_LGUI,             KC_LALT,                                                       KC_SPC,                                                                                                  KC_LALT,             KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
+    ),
+
+    [L2_SYM] = LAYOUT_65_iso_blocker(
         KC_TRNS,             KC_F1,               KC_F2,               KC_F3,               KC_F4,               KC_F5,               KC_F6,               KC_F7,               KC_F8,               KC_F9,               KC_F10,              KC_F11,              KC_F12,              KC_TRNS,             KC_TRNS,
-        KC_TRNS,             KC_TRNS,             LSFT(KC_SLASH),      RALT(KC_8),          RALT(KC_9),          KC_GRAVE,            LSFT(KC_1),          KC_NUBS,             LSFT(KC_NUBS),       LSFT(KC_0),          LSFT(KC_6),          KC_TRNS,             KC_TRNS,                                  KC_TRNS,
-        KC_TRNS,             RALT(KC_MINUS),      LSFT(KC_7),          RALT(KC_7),          RALT(KC_0),          LSFT(KC_RBRC),       LSFT(KC_MINUS),      LSFT(KC_8),          LSFT(KC_9),          KC_SLASH,            LSFT(KC_DOT),        RALT(KC_Q),          KC_TRNS,             KC_TRNS,             KC_TRNS,
-        KC_TRNS,             KC_TRNS,             KC_NONUS_HASH,       LSFT(KC_4),          RALT(KC_NUBS),       RALT(KC_RBRC),       LSFT(KC_EQUAL),      KC_RBRC,             LSFT(KC_5),          LSFT(KC_2),          LSFT(KC_NONUS_HASH), LSFT(KC_COMMA),      KC_TRNS,             KC_TRNS,             KC_TRNS, 
+        KC_TRNS,             KC_TRNS,             DE_UNDS,             DE_LBRC,             DE_RBRC,             DE_CIRC,             DE_EXLM,             DE_LABK,             DE_RABK,             DE_EQL,              DE_AMPR,             KC_TRNS,             KC_TRNS,                                  KC_TRNS,
+        KC_TRNS,             DE_BSLS,             DE_SLSH,             DE_LCBR,             DE_RCBR,             DE_ASTR,             DE_QUES,             DE_LPRN,             DE_RPRN,             DE_MINS,             DE_COLN,             DE_AT,               KC_TRNS,             KC_TRNS,             KC_TRNS,
+        KC_TRNS,             KC_TRNS,             DE_HASH,             DE_DLR,              DE_PIPE,             DE_TILD,             DE_GRV,              DE_PLUS,             DE_PERC,             DE_DQUO,             DE_QUOT,             DE_SCLN,             KC_TRNS,             KC_TRNS,             KC_TRNS, 
         KC_TRNS,             KC_TRNS,             KC_TRNS,                                                       KC_TRNS,                                                                                                 KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS
     ),
 
-    [L2] = LAYOUT_65_iso_blocker(
+    [L3_NAV] = LAYOUT_65_iso_blocker(
         KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
         KC_TRNS,             KC_TRNS,             LCTL(KC_LEFT),       KC_UP,               LCTL(KC_RIGHT),      KC_TRNS,             KC_TRNS,             KC_KP_7,             KC_KP_8,             KC_KP_9,             KC_TRNS,             KC_TRNS,             KC_TRNS,                                  KC_TRNS,
         KC_TRNS,             KC_TRNS,             KC_LEFT,             KC_DOWN,             KC_RIGHT,            KC_TRNS,             KC_TRNS,             KC_KP_4,             KC_KP_5,             KC_KP_6,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
@@ -99,12 +119,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS,             KC_TRNS,             KC_TRNS,                                                       KC_KP_0,                                                                                                 KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS
     ),
 
-    [L3] = LAYOUT_65_iso_blocker(
-        KC_ESC,              KC_1,                KC_2,                KC_3,                KC_4,                KC_5,                KC_6,                KC_7,                KC_8,                KC_9,                KC_0,                KC_F11,              KC_F12,              KC_BSPC,             KC_DEL,
-        KC_TAB,              KC_Q,                KC_W,                KC_E,                KC_R,                KC_T,                KC_Y,                KC_U,                KC_I,                KC_O,                KC_P,                KC_LBRC,             KC_RBRC,                                  TO(L0),
-        KC_RBRC,             KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_HOME,
-        LOL_01,              KC_NONUS_BACKSLASH,  KC_Z,                KC_X,                KC_C,                KC_V,                KC_B,                KC_N,                KC_M,                KC_COMM,             KC_DOT,              KC_SLSH,             KC_RSFT,             KC_UP,               KC_END,
-        KC_LCTL,             KC_LGUI,             KC_LALT,                                                       KC_SPC,                                                                                                  MO(L2),              KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
-    ),
+
 
   };
