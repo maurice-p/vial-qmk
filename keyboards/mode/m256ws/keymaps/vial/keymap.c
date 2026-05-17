@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
-#include "timer.h"
+//#include "timer.h"
+//#include "wait.h"
 
 enum layers {
     L0,
@@ -33,13 +34,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case LOL_01:
       if (record->event.pressed) {
-        register_code(KC_B);
+        register_code(KC_F10);
         register_code(KC_F11);
-        //_delay_ms(20);
-        register_mods(MOD_MASK_SHIFT); 
+        //wait_ms(200);
+        //register_mods(MOD_MASK_SHIFT); 
       } else {
-        unregister_mods(MOD_MASK_SHIFT);
-        unregister_code(KC_B);
+        //unregister_mods(MOD_MASK_SHIFT);
+        unregister_code(KC_F10);
         unregister_code(KC_F11);
       }
       return false; // Skip all further processing of this key
@@ -77,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [L0] = LAYOUT_65_iso_blocker(
         KC_ESC,              KC_1,                KC_2,                KC_3,                KC_4,                KC_5,                KC_6,                KC_7,                KC_8,                KC_9,                KC_0,                KC_MINS,             KC_EQL,              KC_BSPC,             KC_DEL,
         KC_TAB,              KC_Q,                KC_W,                KC_E,                KC_R,                KC_T,                KC_Y,                KC_U,                KC_I,                KC_O,                KC_P,                KC_LBRC,             KC_RBRC,                                  TO(L3),
-        MO(L1),              KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_PGDN,
+        MO(L1),              KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_HOME,
         KC_LSFT,             MO(L2),              KC_Z,                KC_X,                KC_C,                KC_V,                KC_B,                KC_N,                KC_M,                KC_COMM,             KC_DOT,              KC_SLSH,             KC_RSFT,             KC_UP,               KC_END,
         KC_LCTL,             KC_LGUI,             KC_LALT,                                                       KC_SPC,                                                                                                  MO(L2),              KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
     ),
@@ -93,15 +94,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [L2] = LAYOUT_65_iso_blocker(
         KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
         KC_TRNS,             KC_TRNS,             LCTL(KC_LEFT),       KC_UP,               LCTL(KC_RIGHT),      KC_TRNS,             KC_TRNS,             KC_KP_7,             KC_KP_8,             KC_KP_9,             KC_TRNS,             KC_TRNS,             KC_TRNS,                                  KC_TRNS,
-        KC_TRNS,             KC_LEFT,             KC_DOWN,             KC_RIGHT,            KC_TRNS,             KC_TRNS,             KC_KP_4,             KC_KP_5,             KC_KP_6,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
+        KC_TRNS,             KC_TRNS,             KC_LEFT,             KC_DOWN,             KC_RIGHT,            KC_TRNS,             KC_TRNS,             KC_KP_4,             KC_KP_5,             KC_KP_6,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
         KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_KP_1,             KC_KP_2,             KC_KP_3,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,
-        KC_TRNS,             KC_TRNS,             KC_TRNS,                                                       KC_TRNS,                                                                                                 KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS
+        KC_TRNS,             KC_TRNS,             KC_TRNS,                                                       KC_KP_0,                                                                                                 KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS,             KC_TRNS
     ),
 
     [L3] = LAYOUT_65_iso_blocker(
-        KC_ESC,              KC_1,                KC_2,                KC_3,                KC_4,                KC_5,                KC_6,                KC_7,                KC_8,                KC_9,                KC_0,                KC_MINS,             KC_EQL,              KC_BSPC,             KC_DEL,
+        KC_ESC,              KC_1,                KC_2,                KC_3,                KC_4,                KC_5,                KC_6,                KC_7,                KC_8,                KC_9,                KC_0,                KC_F11,              KC_F12,              KC_BSPC,             KC_DEL,
         KC_TAB,              KC_Q,                KC_W,                KC_E,                KC_R,                KC_T,                KC_Y,                KC_U,                KC_I,                KC_O,                KC_P,                KC_LBRC,             KC_RBRC,                                  TO(L0),
-        KC_RBRC,             KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_PGDN,
+        KC_RBRC,             KC_A,                KC_S,                KC_D,                KC_F,                KC_G,                KC_H,                KC_J,                KC_K,                KC_L,                KC_SCLN,             KC_QUOT,             MO(L1),              KC_ENT,              KC_HOME,
         LOL_01,              KC_NONUS_BACKSLASH,  KC_Z,                KC_X,                KC_C,                KC_V,                KC_B,                KC_N,                KC_M,                KC_COMM,             KC_DOT,              KC_SLSH,             KC_RSFT,             KC_UP,               KC_END,
         KC_LCTL,             KC_LGUI,             KC_LALT,                                                       KC_SPC,                                                                                                  MO(L2),              KC_RCTL,             KC_LEFT,             KC_DOWN,             KC_RGHT
     ),
