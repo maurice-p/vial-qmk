@@ -32,18 +32,35 @@ enum my_keycodes {
     GAME_TOG
 };
 
+static uint32_t rng_state = 0x12345678;
+
+static uint32_t pseudo_random(void) {
+    rng_state ^= rng_state << 13;
+    rng_state ^= rng_state >> 17;
+    rng_state ^= rng_state << 5;
+    return rng_state;
+}
+
+static uint16_t random_delay(uint16_t min_ms, uint16_t max_ms) {
+    return min_ms + (pseudo_random() % (max_ms - min_ms + 1));
+}
+
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case LOL_01:
       if (record->event.pressed) {
-        register_code(KC_F10);
-        register_code(KC_F11);
-        //wait_ms(200);
-        //register_mods(MOD_MASK_SHIFT); 
+        register_code(KC_F10); // Attack only champions
+        wait_ms(random_delay(5, 20));
+        register_code(KC_F11); // Advance player stats for circle
+        wait_ms(random_delay(5, 20));
+        register_code(KC_LSFT);
       } else {
-        //unregister_mods(MOD_MASK_SHIFT);
-        unregister_code(KC_F10);
-        unregister_code(KC_F11);
+        unregister_code(KC_LSFT);
+        wait_ms(random_delay(5, 20));
+        unregister_code(KC_F10); // Attack only champions
+        wait_ms(random_delay(5, 20));
+        unregister_code(KC_F11); // Advance player stats for circle
       }
       return false; // Skip all further processing of this key
     case MOVE:
