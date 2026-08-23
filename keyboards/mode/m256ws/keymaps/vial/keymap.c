@@ -32,34 +32,97 @@ enum my_keycodes {
     GAME_TOG
 };
 
-static uint32_t rng_state = 0x12345678;
+static uint32_t rng_state = 0xA3C59AC3u;
 
-static uint32_t pseudo_random(void) {
+
+// mix entropy into the rng_state using a simple hash function
+static void rng_add_entropy(uint32_t value) {
+
+    rng_state ^= value
+               + 0x9E3779B9u
+               + (rng_state << 6)
+               + (rng_state >> 2);
+
+    // Xorshift32
     rng_state ^= rng_state << 13;
     rng_state ^= rng_state >> 17;
     rng_state ^= rng_state << 5;
-    return rng_state;
+
+    // Xorshift darf nicht im Zustand 0 hängen bleiben
+    if (rng_state == 0) {
+        rng_state = 0xA3C59AC3u;
+    }
 }
 
-static uint16_t random_delay(uint16_t min_ms, uint16_t max_ms) {
-    return min_ms + (pseudo_random() % (max_ms - min_ms + 1));
+
+// create 32-bit-pseudo number
+static uint32_t rng32(void) {
+
+    uint32_t x = rng_state;
+
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+
+    if (x == 0) {
+        x = 0xA3C59AC3u;
+    }
+
+    rng_state = x;
+
+    return x;
 }
+
+
+/* random range between min and max */
+static uint16_t random_range(uint16_t min, uint16_t max) {
+
+    if (max <= min) {
+        return min;
+    }
+
+    uint32_t range = (uint32_t)max - min + 1;
+
+    // Verhindert Modulo-Bias
+    uint32_t threshold = (0u - range) % range;
+
+    uint32_t r;
+
+    do {
+        r = rng32();
+    } while (r < threshold);
+
+    return min + (r % range);
+}
+
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  /* collect entropy from every keypress */
+  if (record->event.pressed) {
+
+      uint32_t entropy =
+          timer_read32()
+          ^ ((uint32_t)keycode << 16)
+          ^ ((uint32_t)record->event.key.row << 8)
+          ^ ((uint32_t)record->event.key.col);
+
+      rng_add_entropy(entropy);
+  }
+
   switch (keycode) {
     case LOL_01:
       if (record->event.pressed) {
         register_code(KC_F10); // Attack only champions
-        wait_ms(random_delay(5, 20));
+        wait_ms(random_range(5, 20));
         register_code(KC_F11); // Advance player stats for circle
-        wait_ms(random_delay(5, 20));
+        wait_ms(random_range(5, 20));
         register_code(KC_LSFT);
       } else {
         unregister_code(KC_LSFT);
-        wait_ms(random_delay(5, 20));
+        wait_ms(random_range(5, 20));
         unregister_code(KC_F10); // Attack only champions
-        wait_ms(random_delay(5, 20));
+        wait_ms(random_range(5, 20));
         unregister_code(KC_F11); // Advance player stats for circle
       }
       return false; // Skip all further processing of this key
